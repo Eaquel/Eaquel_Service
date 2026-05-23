@@ -1,4 +1,5 @@
 import java.util.Properties
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.application)
@@ -8,6 +9,19 @@ plugins {
 
 val APP_VERSION_CODE = 1
 val APP_VERSION_NAME = "1.0.0"
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_21)
+        freeCompilerArgs.addAll(listOf(
+            "-Xjvm-default=all",
+            "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
+            "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+            "-opt-in=androidx.compose.animation.ExperimentalAnimationApi",
+            "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi"
+        ))
+    }
+}
 
 android {
     namespace         = "com.eaquel.service"
@@ -55,9 +69,9 @@ android {
     sourceSets {
         getByName("main") {
             manifest.srcFile("Source/Main/AndroidManifest.xml")
-            kotlin.srcDirs("Source/Main/Kotlin")
-            res.srcDirs("Source/Main/res")
-            assets.srcDirs("Source/Main/Assets")
+            kotlin.directories.add(file("Source/Main/Kotlin"))
+            res.directories.add(file("Source/Main/res"))
+            assets.directories.add(file("Source/Main/Assets"))
         }
     }
 
@@ -83,10 +97,10 @@ android {
                 keyAlias      = signingConfigs.getByName("debug").keyAlias
                 keyPassword   = signingConfigs.getByName("debug").keyPassword
             }
-            v1SigningEnabled = false
-            v2SigningEnabled = false
-            v3SigningEnabled = true
-            v4SigningEnabled = true
+            enableV1Signing = false
+            enableV2Signing = false
+            enableV3Signing = true
+            enableV4Signing = true
         }
     }
 
@@ -105,19 +119,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_25
-        targetCompatibility = JavaVersion.VERSION_25
-    }
-
-    kotlinOptions {
-        jvmTarget = "25"
-        freeCompilerArgs += listOf(
-            "-Xjvm-default=all",
-            "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
-            "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-            "-opt-in=androidx.compose.animation.ExperimentalAnimationApi",
-            "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi"
-        )
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     buildFeatures {
