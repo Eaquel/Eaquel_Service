@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Eaquel Service</string>
+
+    <string name="service_running">Servis Çalışıyor</string>
+    <string name="service_stopped">Servis Durduruldu</string>
+
+    <string name="notification_title">Eaquel Service</string>
+    <string name="notification_text">Servis arka planda çalışıyor</string>
+    <string name="anticheat_title">Anticheat Aktif</string>
+    <string name="anticheat_text">Güvenlik taraması devam ediyor</string>
+
+    <string name="channel_name">Servis Bildirimleri</string>
+    <string name="channel_anticheat">Anticheat Bildirimleri</string>
+    <string name="channel_warnings">Uyarı Bildirimleri</string>
+    <string name="channel_desc">ADB eşleştirme bildirimleri</string>
+    <string name="adb_pairing">ADB Eşleştirme</string>
+    <string name="channel_adb_setup">ADB Kurulum</string>
+    <string name="channel_adb_setup_desc">ADB bağlantı kurulum adımları</string>
+
+    <string name="label_system_info">Sistem Bilgisi</string>
+    <string name="label_user_count">Kullanıcı</string>
+    <string name="label_info_cpu">İşlemci</string>
+
+    <string name="info_android_api">Android API</string>
+    <string name="info_device_model">Cihaz Modeli</string>
+    <string name="info_device_code">Cihaz Kodu</string>
+    <string name="info_architecture">Mimari</string>
+    <string name="info_32bit">32-bit</string>
+    <string name="info_64bit">64-bit</string>
+    <string name="info_security_patch">Güvenlik Yaması</string>
+    <string name="info_kernel">Kernel</string>
+    <string name="info_build">Build</string>
+    <string name="info_battery_level">Pil Seviyesi</string>
+    <string name="info_battery_status">Pil Durumu</string>
+    <string name="info_battery_temp">Pil Sıcaklığı</string>
+    <string name="info_storage">Depolama</string>
+    <string name="info_ram_total">Toplam RAM</string>
+    <string name="info_ram_free">Boş RAM</string>
+    <string name="info_selinux">SELinux</string>
+    <string name="info_package">Paket</string>
+    <string name="info_status">Durum</string>
+
+    <string name="battery_charging">Şarj Oluyor</string>
+    <string name="battery_discharging">Deşarj</string>
+    <string name="battery_full">Dolu</string>
+    <string name="battery_not_charging">Şarj Edilmiyor</string>
+
+    <string name="msg_adb_connected_snack">ADB bağlantısı kuruldu</string>
+    <string name="msg_adb_disconnected_snack">ADB bağlantısı kesildi</string>
+    <string name="msg_reconnecting_snack">Yeniden bağlanılıyor…</string>
+    <string name="msg_scan_stopped">Tarama durduruldu</string>
+    <string name="msg_server_starting">Sunucu başlatılıyor…</string>
+    <string name="msg_native_lib_failed">Native kütüphane yüklenemedi</string>
+    <string name="msg_android_11_required">Android 11 veya üzeri gerekli</string>
+    <string name="msg_invalid_port_code">Geçersiz port veya kod</string>
+    <string name="msg_disconnect">Bağlantı kesildi</string>
+    <string name="msg_all_perms_granted">Tüm izinler verildi: %1$s</string>
+    <string name="msg_threat_detected">Tehdit tespit edildi: %1$s</string>
+
+    <string name="threat_dangerous_app">Tehlikeli uygulama: %1$s</string>
+
+    <string name="lang_tr_tab_home">Ana Sayfa</string>
+    <string name="lang_tr_tab_pair">Eşleştir</string>
+    <string name="lang_tr_tab_shell">Konsol</string>
+    <string name="lang_tr_tab_packages">Paketler</string>
+    <string name="lang_tr_tab_logs">Kayıtlar</string>
+    <string name="lang_tr_tab_settings">Ayarlar</string>
+    <string name="lang_tr_tab_system">Sistem</string>
+
+    <string name="lang_tr_status_connected">Bağlandı</string>
+    <string name="lang_tr_status_none">Bağlı Değil</string>
+    <string name="lang_tr_status_error">Hata</string>
+
+    <string name="lang_tr_btn_pair">Eşleştir</string>
+    <string name="lang_tr_btn_cancel">İptal</string>
+    <string name="lang_tr_btn_close">Kapat</string>
+    <string name="lang_tr_btn_change">Değiştir</string>
+    <string name="lang_tr_btn_connect">Bağlan</string>
+    <string name="lang_tr_btn_disconnect_short">Kes</string>
+    <string name="lang_tr_btn_stop">Durdur</string>
+    <string name="lang_tr_btn_clear_data">Veriyi Temizle</string>
+    <string name="lang_tr_btn_uninstall">Kaldır</string>
+    <string name="lang_tr_btn_open_dev_settings">Geliştirici Ayarları</string>
+
+    <string name="lang_tr_pair_code">Eşleştirme Kodu</string>
+    <string name="lang_tr_pair_connecting">Bağlanılıyor…</string>
+    <string name="lang_tr_pair_wireless_title">Kablosuz Hata Ayıklama</string>
+    <string name="lang_tr_pair_step1">Telefon ayarlarını aç</string>
+    <string name="lang_tr_pair_step2">Geliştirici Seçenekleri → Kablosuz Hata Ayıklama</string>
+    <string name="lang_tr_pair_step3">Kod ile Eşleştir seçeneğine dokun</string>
+    <string name="lang_tr_pair_step4">6 haneli kodu buraya gir</string>
+
+    <string name="lang_tr_msg_pairing_port_scanning">Eşleştirme portu aranıyor…</string>
+    <string name="lang_tr_msg_adb_port_not_found">ADB portu bulunamadı</string>
+    <string name="lang_tr_msg_no_connection">Bağlantı yok</string>
+    <string name="lang_tr_msg_wifi_ip_fail">WiFi IP adresi alınamadı</string>
+    <string name="lang_tr_msg_port_closed">Port kapalı</string>
+    <string name="lang_tr_msg_port_found">Port bulundu</string>
+    <string name="lang_tr_msg_reconnecting">Yeniden bağlanılıyor…</string>
+    <string name="lang_tr_msg_no_valid_port">Geçerli port bulunamadı</string>
+    <string name="lang_tr_msg_code_required">6 haneli kod gerekli</string>
+    <string name="lang_tr_msg_invalid_addr">Geçersiz adres: {addr}</string>
+    <string name="lang_tr_msg_notif_pair_found">Eşleştirme portu bulundu</string>
+
+    <string name="lang_tr_shell_hint">komut gir…</string>
+    <string name="lang_tr_search_packages">Paket ara…</string>
+    <string name="lang_tr_settings_lang">Dil</string>
+    <string name="lang_tr_language_label">Uygulama Dili</string>
+    <string name="lang_tr_system_lang">Sistem Dili</string>
+    <string name="lang_tr_all">Tümü</string>
+    <string name="lang_tr_user">Kullanıcı</string>
+    <string name="lang_tr_grant">İzin Ver</string>
+    <string name="lang_tr_system">Sistem</string>
+
+    <string name="lang_tr_log_filter_info">Bilgi</string>
+    <string name="lang_tr_log_filter_success">Başarılı</string>
+    <string name="lang_tr_log_filter_warn">Uyarı</string>
+    <string name="lang_tr_log_filter_error">Hata</string>
+    <string name="lang_tr_log_filter_critical">Kritik</string>
+
+    <string name="lang_tr_adb_setup_title">ADB Bağlantısı Kurulmadı</string>
+    <string name="lang_tr_adb_setup_subtitle">Bağlanmak için adımları takip edin</string>
+
+    <string name="lang_tr_notif_adb_setup_title">ADB Kurulumu Gerekli</string>
+    <string name="lang_tr_notif_adb_setup_body">Uygulamayı kullanmak için ADB kablosuz hata ayıklamayı etkinleştirin</string>
+    <string name="lang_tr_notif_adb_step1">Geliştirici Seçenekleri\'ni etkinleştir</string>
+    <string name="lang_tr_notif_adb_step2">Kablosuz Hata Ayıklama\'yı aç</string>
+    <string name="lang_tr_notif_adb_step3">Kod ile Eşleştir\'e dokun ve kodu gir</string>
+    <string name="lang_tr_notif_pair_step_title">Eşleştirme Kodu Gerekli</string>
+    <string name="lang_tr_notif_pair_step_body">Kablosuz Hata Ayıklama ekranında kodu girin</string>
+    <string name="lang_tr_notif_pair_step_detail">Ayarlar → Geliştirici Seçenekleri → Kablosuz Hata Ayıklama → Kod ile Eşleştir</string>
+    <string name="lang_tr_notif_connected_title">ADB Bağlandı</string>
+    <string name="lang_tr_notif_connected_body">Bağlantı kuruldu: {host}:{port}</string>
+    <string name="lang_tr_notif_disconnected_title">ADB Bağlantısı Kesildi</string>
+    <string name="lang_tr_notif_disconnected_body">Yeniden bağlanmak için dokunun</string>
+    <string name="lang_tr_notif_btn_open_dev">Geliştirici Ayarları</string>
+    <string name="lang_tr_notif_btn_open_pair">Eşleştirme Ekranı</string>
+    <string name="lang_tr_notif_btn_dismiss">Kapat</string>
+    <string name="lang_tr_notif_btn_reconnect">Yeniden Bağlan</string>
+
+    <string name="lang_en_tab_home">Home</string>
+    <string name="lang_en_tab_pair">Pair</string>
+    <string name="lang_en_tab_shell">Shell</string>
+    <string name="lang_en_tab_packages">Packages</string>
+    <string name="lang_en_tab_logs">Logs</string>
+    <string name="lang_en_tab_settings">Settings</string>
+    <string name="lang_en_tab_system">System</string>
+
+    <string name="lang_en_status_connected">Connected</string>
+    <string name="lang_en_status_none">Not Connected</string>
+    <string name="lang_en_status_error">Error</string>
+
+    <string name="lang_en_btn_pair">Pair</string>
+    <string name="lang_en_btn_cancel">Cancel</string>
+    <string name="lang_en_btn_close">Close</string>
+    <string name="lang_en_btn_change">Change</string>
+    <string name="lang_en_btn_connect">Connect</string>
+    <string name="lang_en_btn_disconnect_short">Disconnect</string>
+    <string name="lang_en_btn_stop">Stop</string>
+    <string name="lang_en_btn_clear_data">Clear Data</string>
+    <string name="lang_en_btn_uninstall">Uninstall</string>
+    <string name="lang_en_btn_open_dev_settings">Developer Settings</string>
+
+    <string name="lang_en_pair_code">Pairing Code</string>
+    <string name="lang_en_pair_connecting">Connecting…</string>
+    <string name="lang_en_pair_wireless_title">Wireless Debugging</string>
+    <string name="lang_en_pair_step1">Open phone settings</string>
+    <string name="lang_en_pair_step2">Developer Options → Wireless Debugging</string>
+    <string name="lang_en_pair_step3">Tap Pair device with pairing code</string>
+    <string name="lang_en_pair_step4">Enter the 6-digit code here</string>
+
+    <string name="lang_en_msg_pairing_port_scanning">Scanning for pairing port…</string>
+    <string name="lang_en_msg_adb_port_not_found">ADB port not found</string>
+    <string name="lang_en_msg_no_connection">No connection</string>
+    <string name="lang_en_msg_wifi_ip_fail">Could not get WiFi IP</string>
+    <string name="lang_en_msg_port_closed">Port closed</string>
+    <string name="lang_en_msg_port_found">Port found</string>
+    <string name="lang_en_msg_reconnecting">Reconnecting…</string>
+    <string name="lang_en_msg_no_valid_port">No valid port found</string>
+    <string name="lang_en_msg_code_required">6-digit code required</string>
+    <string name="lang_en_msg_invalid_addr">Invalid address: {addr}</string>
+    <string name="lang_en_msg_notif_pair_found">Pairing port found</string>
+
+    <string name="lang_en_shell_hint">enter command…</string>
+    <string name="lang_en_search_packages">Search packages…</string>
+    <string name="lang_en_settings_lang">Language</string>
+    <string name="lang_en_language_label">App Language</string>
+    <string name="lang_en_system_lang">System Language</string>
+    <string name="lang_en_all">All</string>
+    <string name="lang_en_user">User</string>
+    <string name="lang_en_grant">Grant</string>
+    <string name="lang_en_system">System</string>
+
+    <string name="lang_en_log_filter_info">Info</string>
+    <string name="lang_en_log_filter_success">Success</string>
+    <string name="lang_en_log_filter_warn">Warn</string>
+    <string name="lang_en_log_filter_error">Error</string>
+    <string name="lang_en_log_filter_critical">Critical</string>
+
+    <string name="lang_en_adb_setup_title">ADB Not Connected</string>
+    <string name="lang_en_adb_setup_subtitle">Follow the steps to connect</string>
+
+    <string name="lang_en_notif_adb_setup_title">ADB Setup Required</string>
+    <string name="lang_en_notif_adb_setup_body">Enable wireless debugging to use the app</string>
+    <string name="lang_en_notif_adb_step1">Enable Developer Options</string>
+    <string name="lang_en_notif_adb_step2">Turn on Wireless Debugging</string>
+    <string name="lang_en_notif_adb_step3">Tap Pair with code and enter it</string>
+    <string name="lang_en_notif_pair_step_title">Pairing Code Required</string>
+    <string name="lang_en_notif_pair_step_body">Enter the code on the Wireless Debugging screen</string>
+    <string name="lang_en_notif_pair_step_detail">Settings → Developer Options → Wireless Debugging → Pair with code</string>
+    <string name="lang_en_notif_connected_title">ADB Connected</string>
+    <string name="lang_en_notif_connected_body">Connection established: {host}:{port}</string>
+    <string name="lang_en_notif_disconnected_title">ADB Disconnected</string>
+    <string name="lang_en_notif_disconnected_body">Tap to reconnect</string>
+    <string name="lang_en_notif_btn_open_dev">Developer Settings</string>
+    <string name="lang_en_notif_btn_open_pair">Pairing Screen</string>
+    <string name="lang_en_notif_btn_dismiss">Dismiss</string>
+    <string name="lang_en_notif_btn_reconnect">Reconnect</string>
+
+</resources>

@@ -1,0 +1,114 @@
+name: Eaquel_Service
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: gradlew Olustur
+        run: |
+          cat > gradlew << 'GRADLEW'
+          #!/bin/sh
+          APP_HOME="`pwd -P`"
+          CLASSPATH="$APP_HOME/Gradle/gradle-wrapper.jar"
+          JAVA_OPTS=""
+          GRADLE_OPTS=""
+          exec "$JAVA_HOME/bin/java" $JAVA_OPTS $GRADLE_OPTS \
+            -classpath "$CLASSPATH" \
+            org.gradle.wrapper.GradleWrapperMain \
+            "$@"
+          GRADLEW
+          chmod +x gradlew
+
+      - name: CMake 4.3.2 ve NDK Kur
+        run: |
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null 2>&1 || true
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "ndk;29.0.14206865" > /dev/null
+          curl -sSL https://github.com/Kitware/CMake/releases/download/v4.3.2/cmake-4.3.2-linux-x86_64.tar.gz -o cmake.tar.gz
+          tar -zxf cmake.tar.gz
+          sudo ln -sf $(pwd)/cmake-4.3.2-linux-x86_64/bin/cmake /usr/local/bin/cmake
+          sudo ln -sf $(pwd)/cmake-4.3.2-linux-x86_64/bin/ninja /usr/local/bin/ninja
+
+      - name: Imzalama
+        if: github.event_name != 'pull_request'
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
+          KEYSTORE_ALIAS_PASSWORD: ${{ secrets.KEYSTORE_ALIAS_PASSWORD }}
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > eaquel_raw.jks
+          keytool -importkeystore \
+            -srckeystore eaquel_raw.jks \
+            -srcstoretype PKCS12 \
+            -srcstorepass "$KEYSTORE_PASSWORD" \
+            -destkeystore eaquel.jks \
+            -deststoretype JKS \
+            -deststorepass "$KEYSTORE_PASSWORD" \
+            -srcalias "$KEYSTORE_ALIAS" \
+            -destalias "$KEYSTORE_ALIAS" \
+            -destkeypass "$KEYSTORE_ALIAS_PASSWORD" \
+            -noprompt 2>/dev/null || cp eaquel_raw.jks eaquel.jks
+          {
+            echo "KEYSTORE_FILE=../eaquel.jks"
+            echo "KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD"
+            echo "KEYSTORE_ALIAS=$KEYSTORE_ALIAS"
+            echo "KEYSTORE_ALIAS_PASSWORD=$KEYSTORE_ALIAS_PASSWORD"
+          } > signing.properties
+
+      - name: Gradle Properties Uret
+        run: |
+          {
+            echo "org.gradle.parallel=true"
+            echo "org.gradle.caching=true"
+            echo "org.gradle.configuration-cache=true"
+            echo "org.gradle.jvmargs=-Xmx4096m -XX:+UseG1GC"
+            echo "android.useAndroidX=true"
+            echo "android.nonTransitiveRClass=true"
+          } > gradle.properties
+
+      - name: Release Build
+        if: github.event_name != 'pull_request'
+        run: ./gradlew :Service:assembleRelease
+
+      - name: Release APK Yukle
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Eaquel-release-${{ github.sha }}
+          path: Service/build/outputs/apk/release/
+          compression-level: 9
+          retention-days: 90
+
+      - name: GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Eaquel Service ${{ github.ref_name }}"
+          draft: false
+          prerelease: ${{ contains(github.ref_name, 'beta') || contains(github.ref_name, 'alpha') }}
+          files: Service/build/outputs/apk/release/*.apk
+          body: |
+            **Paket:** com.eaquel.service
+            **Android:** 11-17 (API 30-36)
+            **Mimari:** arm64-v8a · armeabi-v7a
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
