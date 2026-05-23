@@ -30,12 +30,8 @@ jobs:
           #!/bin/sh
           APP_HOME="`pwd -P`"
           CLASSPATH="$APP_HOME/Gradle/gradle-wrapper.jar"
-          JAVA_OPTS=""
-          GRADLE_OPTS=""
-          exec "$JAVA_HOME/bin/java" $JAVA_OPTS $GRADLE_OPTS \
-            -classpath "$CLASSPATH" \
-            org.gradle.wrapper.GradleWrapperMain \
-            "$@"
+          exec "$JAVA_HOME/bin/java" -classpath "$CLASSPATH" \
+            org.gradle.wrapper.GradleWrapperMain "$@"
           GRADLEW
           chmod +x gradlew
 
