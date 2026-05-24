@@ -3,6 +3,7 @@ package com.eaquel.service
 
 import android.app.Activity
 import android.content.Context
+import androidx.compose.ui.graphics.asImageBitmap
 import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
@@ -834,7 +835,7 @@ fun EaquelHeader() {
             Box(Modifier.size(44.dp).clip(CircleShape).background(MaterialTheme.colorScheme.background), contentAlignment = Alignment.Center) {
                 if (bmp != null) {
                     androidx.compose.foundation.Image(
-                        bitmap = androidx.compose.ui.graphics.asImageBitmap(bmp),
+                        bitmap = bmp.asImageBitmap(),
                         contentDescription = null,
                         modifier = Modifier.size(44.dp).clip(CircleShape),
                         contentScale = androidx.compose.ui.layout.ContentScale.Crop

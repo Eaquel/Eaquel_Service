@@ -51,8 +51,6 @@ import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room.*
-import androidx.work.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.util.UUID
@@ -483,15 +481,10 @@ class GameSecurityManager(private val ctx: Context) {
     fun getCallerPackage(uid: Int): String? = ctx.packageManager.getPackagesForUid(uid)?.firstOrNull()
 }
 
-class GameHealthWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, params) {
-    override suspend fun doWork(): Result {
-        if (!sdkOk()) return Result.failure()
+class GameHealthWorker {
+    fun run() {
+        if (!sdkOk()) return
         if (GameServer.isRunning()) GameAnticheat.performScan()
-        val db  = GameDatabase.get(applicationContext)
-        val old = System.currentTimeMillis() - 7L * 24 * 60 * 60 * 1000L
-        db.logDao().deleteOlderThan(old)
-        db.securityEventDao().deleteOlderThan(old)
-        return Result.success()
     }
 }
 
@@ -524,71 +517,25 @@ object GameDiagnostics {
     }
 }
 
-@Entity(tableName = "logs")
-data class LogDbEntry(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(name = "msg")   val msg: String,
-    @ColumnInfo(name = "level") val level: String,
-    @ColumnInfo(name = "tag")   val tag: String,
-    @ColumnInfo(name = "ts")    val ts: Long = System.currentTimeMillis()
-)
+data class LogDbEntry(val id: Long = 0, val msg: String, val level: String, val tag: String, val ts: Long = System.currentTimeMillis())
+data class SecurityEvent(val id: Long = 0, val type: String, val detail: String, val severity: Int, val ts: Long = System.currentTimeMillis(), val resolved: Boolean = false)
+data class SessionRecord(val token: String, val uid: Int, val pkg: String, val pid: Int, val startedAt: Long = System.currentTimeMillis(), val endedAt: Long = 0L, val active: Boolean = true)
 
-@Entity(tableName = "events")
-data class SecurityEvent(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(name = "type")     val type: String,
-    @ColumnInfo(name = "detail")   val detail: String,
-    @ColumnInfo(name = "severity") val severity: Int,
-    @ColumnInfo(name = "ts")       val ts: Long = System.currentTimeMillis(),
-    @ColumnInfo(name = "resolved") val resolved: Boolean = false
-)
+object GameDatabase {
+    private val logs     = mutableListOf<LogDbEntry>()
+    private val events   = mutableListOf<SecurityEvent>()
+    private val sessions = mutableListOf<SessionRecord>()
+    private val lock     = Any()
 
-@Entity(tableName = "sessions")
-data class SessionRecord(
-    @PrimaryKey val token: String,
-    @ColumnInfo(name = "uid")        val uid: Int,
-    @ColumnInfo(name = "pkg")        val pkg: String,
-    @ColumnInfo(name = "pid")        val pid: Int,
-    @ColumnInfo(name = "started_at") val startedAt: Long = System.currentTimeMillis(),
-    @ColumnInfo(name = "ended_at")   val endedAt: Long   = 0L,
-    @ColumnInfo(name = "active")     val active: Boolean = true
-)
-
-@Dao interface LogDao {
-    @Query("SELECT * FROM logs ORDER BY ts DESC LIMIT :limit") fun getRecent(limit: Int = 500): Flow<List<LogDbEntry>>
-    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun insert(entry: LogDbEntry)
-    @Query("DELETE FROM logs WHERE ts < :before") suspend fun deleteOlderThan(before: Long)
-    @Query("SELECT COUNT(*) FROM logs") suspend fun count(): Int
-}
-
-@Dao interface SecurityEventDao {
-    @Query("SELECT * FROM events ORDER BY ts DESC LIMIT :limit") fun getRecent(limit: Int = 100): Flow<List<SecurityEvent>>
-    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun insert(event: SecurityEvent)
-    @Update suspend fun update(event: SecurityEvent)
-    @Query("SELECT COUNT(*) FROM events WHERE resolved = 0") fun unresolvedCount(): Flow<Int>
-    @Query("DELETE FROM events WHERE ts < :before") suspend fun deleteOlderThan(before: Long)
-}
-
-@Dao interface SessionDao {
-    @Query("SELECT * FROM sessions WHERE active = 1 ORDER BY started_at DESC") fun activeSessions(): Flow<List<SessionRecord>>
-    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun insert(session: SessionRecord)
-    @Update suspend fun update(session: SessionRecord)
-    @Query("UPDATE sessions SET active = 0, ended_at = :endedAt WHERE token = :token") suspend fun close(token: String, endedAt: Long = System.currentTimeMillis())
-    @Query("SELECT COUNT(*) FROM sessions WHERE active = 1") fun activeCount(): Flow<Int>
-}
-
-@Database(entities = [LogDbEntry::class, SecurityEvent::class, SessionRecord::class], version = 1, exportSchema = true)
-abstract class GameDatabase : RoomDatabase() {
-    abstract fun logDao(): LogDao
-    abstract fun securityEventDao(): SecurityEventDao
-    abstract fun sessionDao(): SessionDao
-    companion object {
-        @Volatile private var INSTANCE: GameDatabase? = null
-        fun get(ctx: Context): GameDatabase = INSTANCE ?: synchronized(this) {
-            INSTANCE ?: Room.databaseBuilder(ctx.applicationContext, GameDatabase::class.java, "eaquel_db")
-                .fallbackToDestructiveMigration().build().also { INSTANCE = it }
-        }
-    }
+    fun insertLog(entry: LogDbEntry)       { synchronized(lock) { logs.add(entry); if (logs.size > 1000) logs.removeAt(0) } }
+    fun insertEvent(event: SecurityEvent)  { synchronized(lock) { events.add(event) } }
+    fun cleanOlderThan(before: Long)       { synchronized(lock) { logs.removeAll { it.ts < before }; events.removeAll { it.ts < before } } }
+    fun get(ctx: Context) = this
+    fun logDao()           = this
+    fun securityEventDao() = this
+    fun deleteOlderThan(before: Long) { cleanOlderThan(before) }
+    suspend fun insert(entry: LogDbEntry) { insertLog(entry) }
+    suspend fun insert(event: SecurityEvent) { insertEvent(event) }
 }
 
 object GameServer {
@@ -865,10 +812,12 @@ class GameApp : Application() {
     }
 
     private fun scheduleHealthWorker() {
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-            "eaquel_health", ExistingPeriodicWorkPolicy.KEEP,
-            PeriodicWorkRequestBuilder<GameHealthWorker>(15, TimeUnit.MINUTES).build()
-        )
+        kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.SupervisorJob() + kotlinx.coroutines.Dispatchers.IO).launch {
+            while (true) {
+                kotlinx.coroutines.delay(15 * 60 * 1000L)
+                try { GameHealthWorker().run() } catch (_: Exception) {}
+            }
+        }
     }
 
     companion object { lateinit var instance: GameApp private set }
@@ -1308,7 +1257,7 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
                 if (!ac.safe) {
                     val threats = ac.activeThreats.joinToString(", ")
                     log(getApplication<GameApp>().getString(R.string.msg_threat_detected, threats), LogEntry.Level.CRITICAL, TAG_AC)
-                    db.securityEventDao().insert(SecurityEvent(type="ANTICHEAT", detail=threats, severity=ac.threatLevel.ordinal))
+                    db.insert(SecurityEvent(type="ANTICHEAT", detail=threats, severity=ac.threatLevel.ordinal))
                 }
             }
         }
@@ -1438,7 +1387,7 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         cur.add(0, e)
         if (cur.size > 300) cur.subList(300, cur.size).clear()
         _ui.value = _ui.value.copy(logs = cur)
-        viewModelScope.launch(Dispatchers.IO) { db.logDao().insert(LogDbEntry(msg=m,level=l.name,tag=t)) }
+        viewModelScope.launch(Dispatchers.IO) { db.insert(LogDbEntry(msg=m,level=l.name,tag=t)) }
     }
 
     internal fun emit(e: UiEvent) { viewModelScope.launch { _events.emit(e) } }
